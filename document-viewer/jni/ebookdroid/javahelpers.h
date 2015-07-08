@@ -221,6 +221,11 @@ public:
         return ptb;
     }
 
+    void release(jobject ptb)
+    {
+        jenv->DeleteLocalRef(ptb);
+    }
+
 };
 
 #else /* not __cplusplus */

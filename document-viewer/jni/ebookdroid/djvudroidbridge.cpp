@@ -425,26 +425,24 @@ void djvu_get_djvu_words(SearchHelper& h, jobject list, miniexp_t expr, jstring 
 
             // DEBUG("%d, %d, %d, %d: %s", coords[0], coords[1], coords[2], coords[3], text);
 
-            bool add = !pattern;
             jstring txt = h.str.toString(text);
             if (pattern)
             {
                 jstring ltxt = h.str.toLowerCase(txt);
-                add = h.str.indexOf(ltxt, pattern) >= 0;
                 h.str.release(ltxt);
             }
-            if (add)
+            else
             {
                 // add to list
                 jobject ptb = h.box.create();
                 h.box.setRect(ptb, coords);
                 h.box.setText(ptb, txt);
                 h.arr.add(list, ptb);
+                h.box.release(ptb);
             }
-            else
-            {
-                h.str.release(txt);
-            }
+
+	    h.str.release(txt);
+
         }
         else if (miniexp_consp(head))
         {
