@@ -209,6 +209,16 @@ public class DecodeServiceBase implements DecodeService {
                 }
             }
 
+            if (task.node.page.text == null) {
+                task.node.page.text = vuPage.getPageText();
+                if (LengthUtils.isNotEmpty(task.node.page.text)) {
+                    if (LCTX.isDebugEnabled()) {
+                        LCTX.d(Thread.currentThread().getName() + ": Task " + task.id + ": Found text on page "
+                                + task.pageNumber + ": " + task.node.page.text);
+                    }
+                }
+            }
+
             finishDecoding(task, vuPage, bitmap, r, croppedPageBounds);
         } catch (final OutOfMemoryError ex) {
             LCTX.e(Thread.currentThread().getName() + ": Task " + task.id + ": No memory to decode " + task.node);

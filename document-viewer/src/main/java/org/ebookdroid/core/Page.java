@@ -8,6 +8,7 @@ import org.ebookdroid.common.settings.types.DocumentViewMode;
 import org.ebookdroid.common.settings.types.PageType;
 import org.ebookdroid.core.codec.CodecPageInfo;
 import org.ebookdroid.core.codec.PageLink;
+import org.ebookdroid.core.codec.PageTextBox;
 import org.ebookdroid.core.crop.PageCropper;
 import org.ebookdroid.ui.viewer.IActivityController;
 
@@ -43,6 +44,7 @@ public class Page {
     int zoomLevel = 1;
 
     List<PageLink> links;
+    List<PageTextBox> text;
 
     public Page(final IActivityController base, final PageIndex index, final PageType pt, final CodecPageInfo cpi) {
         this.base = base;

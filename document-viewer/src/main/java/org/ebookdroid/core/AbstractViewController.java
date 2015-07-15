@@ -14,6 +14,7 @@ import org.ebookdroid.common.touch.MultiTouchGestureDetector;
 import org.ebookdroid.common.touch.TouchManager;
 import org.ebookdroid.common.touch.TouchManager.Touch;
 import org.ebookdroid.core.codec.PageLink;
+import org.ebookdroid.core.codec.PageTextBox;
 import org.ebookdroid.core.models.DocumentModel;
 import org.ebookdroid.core.models.DocumentModel.PageIterator;
 import org.ebookdroid.ui.viewer.IActivityController;
@@ -572,6 +573,40 @@ public abstract class AbstractViewController extends AbstractComponentController
         return false;
     }
 
+    protected final boolean processSelect(final MotionEvent e) {
+        final float x = e.getX();
+        final float y = e.getY();
+
+        final float zoom = base.getZoomModel().getZoom();
+        final RectF rect = new RectF(x, y, x, y);
+        rect.offset(getScrollX(), getScrollY());
+
+        final PageIterator pages = model.getPages(firstVisiblePage, lastVisiblePage + 1);
+        try {
+            final RectF bounds = new RectF();
+            for (final Page page : pages) {
+                page.getBounds(zoom, bounds);
+                if (RectF.intersects(bounds, rect)) {
+                    if (LengthUtils.isNotEmpty(page.text)) {
+                        for (final PageTextBox ptb : page.text) {
+			    RectF textRect = page.getPageRegion(bounds, ptb);
+			    if (RectF.intersects(textRect, rect)) {
+				LCTX.d("Selecting " + ptb.toString());
+				return true;
+			    }
+                        }
+                    }
+                    return false;
+                }
+            }
+        } finally {
+            pages.release();
+        }
+
+        return false;
+    }
+
+
     protected final boolean processLinkTap(final Page page, final PageLink link, final RectF pageBounds,
             final RectF tapRect) {
         final RectF linkRect = page.getLinkSourceRect(pageBounds, link);
@@ -735,7 +770,7 @@ public abstract class AbstractViewController extends AbstractComponentController
                 LCTX.d("onLongPress(" + e + ")");
             }
             // LongTap operation cause side-effects
-            // processTap(TouchManager.Touch.LongTap, e);
+            processSelect(e);
         }
 
         /**
